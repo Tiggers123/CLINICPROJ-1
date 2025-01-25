@@ -27,10 +27,10 @@ const data = [
 
 const CountChart = () => {
   return (
-    <div className="bg-white rounded-xl w-full h-full p-4">
+    <div className="bg-white rounded-xl w-full h-full p-4 shadow-md">
       {/* TITLE */}
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">Patients</h1>
+        <h1 className="text-lg ">ผู้ป่วย</h1>
       </div>
       {/* CHART */}
       <div className="relative w-full h-[75%]">
