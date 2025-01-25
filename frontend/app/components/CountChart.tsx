@@ -16,7 +16,7 @@ const data = [
   {
     name: "Girls",
     count: 53,
-    fill: "#FAE27C",
+    fill: "#fec9d5",
   },
   {
     name: "Boys",
@@ -31,7 +31,6 @@ const CountChart = () => {
       {/* TITLE */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">Patients</h1>
-        <Image src="/moreDark.png" alt="" width={20} height={20} />
       </div>
       {/* CHART */}
       <div className="relative w-full h-[75%]">
@@ -48,7 +47,7 @@ const CountChart = () => {
           </RadialBarChart>
         </ResponsiveContainer>
         <Image
-          src="/"
+          src="/maleFemale.png"
           alt=""
           width={50}
           height={50}
@@ -63,7 +62,7 @@ const CountChart = () => {
           <h2 className="text-xs text-gray-300">Boys (55%)</h2>
         </div>
         <div className="flex flex-col gap-1">
-          <div className="w-5 h-5 bg-lamaYellow rounded-full" />
+          <div className="w-5 h-5 bg-lamaError rounded-full" />
           <h1 className="font-bold">1,234</h1>
           <h2 className="text-xs text-gray-300">Girls (45%)</h2>
         </div>
