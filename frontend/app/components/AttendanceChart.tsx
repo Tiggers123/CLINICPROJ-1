@@ -44,7 +44,7 @@ const AttendanceChart = () => {
   return (
     <div className="bg-white rounded-lg p-4 h-full shadow-md">
       <div className="flex justify-between items-center">
-        <h1 className="text-lg ">รายรับ-รายจ่าย</h1>
+        <h1 className="text-lg ">รายรับ-รายจ่ายแต่ละสัปดาห์</h1>
       </div>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart width={500} height={300} data={data} barSize={20}>

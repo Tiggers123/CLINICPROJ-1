@@ -1,24 +1,41 @@
+"use client";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
+  const pathname = usePathname();
+  const [pageName, setPageName] = useState("");
+
+    useEffect(() => {
+      const pageNames: Record<string, string> = {
+        "/dashboard": "แดชบอร์ด",
+        "/manage": "บันทึกรายรับ",
+        "/billing": "ใบเสร็จ",
+      };
+
+      setPageName(pageNames[pathname] || "หน้าแรก");
+    }, [pathname]);
+
   return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-md m-4 -mb-0.5 shadow-md">
-      {/* SEARCH BAR */}
-      <div className="hidden md:flex items-center gap-2 text-xs rounded-full ring-[1.5px] ring-gray-300 px-2">
-        <Image src="/search.png" alt="" width={14} height={14} />
-        <input
-          type="text"
-          placeholder="Search..."
-          className="w-[200px] p-2 bg-transparent outline-none"
-        />
+    <div className="flex items-center justify-between p-4 bg-white rounded-md m-4 shadow-md">
+      {/* LEFT SECTION */}
+      <div className="flex items-center gap-4">
+        <h1 className="text-2xl  whitespace-nowrap">{pageName}</h1>
       </div>
-      {/* ICONS AND USER */}
-      <div className="flex items-center gap-6 justify-end w-full">
-        <div className="flex flex-col">
-          <span className="text-xs leading-3 font-medium">John Doe</span>
-          <span className="text-[10px] text-gray-500 text-right">Admin</span>
+      {/* RIGHT SECTION */}
+      <div className="flex items-center gap-3">
+        <div className="flex flex-col text-right">
+          <span className="text-xs font-medium leading-3">John Doe</span>
+          <span className="text-[10px] text-gray-500">Admin</span>
         </div>
-        <Image src="/" alt="" width={36} height={36} className="rounded-full" />
+        <Image
+          src="/user.png"
+          alt="Profile"
+          width={36}
+          height={36}
+          className="rounded-full"
+        />
       </div>
     </div>
   );

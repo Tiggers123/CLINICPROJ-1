@@ -79,7 +79,7 @@ const FinanceChart = () => {
   return (
     <div className="bg-white rounded-xl w-full h-full p-4 shadow-md">
       <div className="flex justify-between items-center">
-        <h1 className="text-lg">รายได้แต่ละเดือน</h1>
+        <h1 className="text-lg">รายรับ-ราบจ่ายแต่ละเดือน</h1>
       </div>
       <ResponsiveContainer width="100%" height="90%">
         <LineChart
