@@ -40,22 +40,24 @@ const handleDelete = async (id: number) => {
 
 const InteractiveRow = ({ item }: { item: Bill }) => (
   <tr className="hover:bg-gray-50">
-    <td className="px-6 py-4 text-sm font-semibold">{item.id}</td>
-    <td className="px-6 py-4 hidden md:table-cell">{item.date}</td>
-    <td className="px-6 py-4 hidden md:table-cell">{item.optional}</td>
-    <td className="px-6 py-4 hidden md:table-cell">{item.amount}</td>
+    <td className="px-6 py-4 text-center text-sm font-semibold">{item.id}</td>
+    <td className="px-6 py-4 text-center hidden md:table-cell">{item.date}</td>
+    <td className="px-6 py-4 text-center hidden md:table-cell">
+      {item.optional}
+    </td>
+    <td className="px-6 py-4 text-center hidden md:table-cell">{item.amount}</td>
     <td className="px-6 py-4 text-center">
       <div className="flex justify-center gap-2">
         {/* Edit Button */}
-        <button
+        {/* <button
           className="w-6 h-6 flex items-center justify-center rounded-md bg-lamaError hover:bg-pink-500 text-white"
           title="Edit"
         >
           <i className="fa-solid fa-pen"></i>
-        </button>
+        </button> */}
         {/* Delete Button */}
         <button
-          className="w-6 h-6 flex items-center justify-center rounded-md bg-pink-400 hover:bg-pink-500 text-white"
+          className="w-7 h-7 flex items-center justify-center rounded-full bg-pink-400 hover:bg-pink-500 text-white"
           title="Delete"
           onClick={() => handleDelete(item.id)}
         >

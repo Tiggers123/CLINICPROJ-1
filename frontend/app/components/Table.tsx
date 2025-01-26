@@ -1,3 +1,5 @@
+import React from "react";
+
 const Table = ({
   columns,
   renderRow,
@@ -12,24 +14,23 @@ const Table = ({
       <table className="w-full mt-4 border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-100 text-gray-600 text-sm">
-            {columns.map((col) => (
+            {columns.map((column, index) => (
               <th
-                key={col.accessor}
-                className={`px-6 py-4 text-left font-semibold ${
-                  col.className || ""
-                }`}
+                key={index}
+                className={`px-6 py-4 font-semibold ${column.className || ""}`}
               >
-                {col.header}
+                {column.header}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {data.length > 0 ? (
-            data.map((item, index) => {
-              // Ensure the renderRow function handles key assignment
-              return renderRow(item, index);
-            })
+            data.map((item, index) => (
+              <React.Fragment key={index}>
+                {renderRow(item, index)}
+              </React.Fragment>
+            ))
           ) : (
             <tr>
               <td

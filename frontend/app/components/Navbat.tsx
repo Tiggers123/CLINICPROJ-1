@@ -11,6 +11,7 @@ const Navbar = () => {
       const pageNames: Record<string, string> = {
         "/dashboard": "แดชบอร์ด",
         "/manage": "บันทึกรายรับ",
+        "/expense":"บันทึกรายจ่าย",
         "/billing": "ใบเสร็จ",
       };
 
