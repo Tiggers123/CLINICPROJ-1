@@ -14,62 +14,62 @@ import {
 
 const data = [
   {
-    name: "Jan",
+    name: "2868",
     income: 4000,
     expense: 2400,
   },
   {
-    name: "Feb",
+    name: "2569",
     income: 3000,
     expense: 1398,
   },
   {
-    name: "Mar",
+    name: "2570",
     income: 2000,
     expense: 9800,
   },
   {
-    name: "Apr",
+    name: "2571",
     income: 2780,
     expense: 3908,
   },
   {
-    name: "May",
+    name: "2572",
     income: 1890,
     expense: 4800,
   },
   {
-    name: "Jun",
+    name: "2573",
     income: 2390,
     expense: 3800,
   },
   {
-    name: "Jul",
+    name: "2574",
     income: 3490,
     expense: 4300,
   },
   {
-    name: "Aug",
+    name: "2575",
     income: 3490,
     expense: 4300,
   },
   {
-    name: "Sep",
+    name: "2576",
     income: 3490,
     expense: 4300,
   },
   {
-    name: "Oct",
+    name: "2577",
     income: 3490,
     expense: 4300,
   },
   {
-    name: "Nov",
+    name: "2578",
     income: 3490,
     expense: 4300,
   },
   {
-    name: "Dec",
+    name: "2579",
     income: 3490,
     expense: 4300,
   },
@@ -79,7 +79,7 @@ const FinanceChart = () => {
   return (
     <div className="bg-white rounded-xl w-full h-full p-4 shadow-md">
       <div className="flex justify-between items-center">
-        <h1 className="text-lg">รายรับ-ราบจ่ายแต่ละเดือน</h1>
+        <h1 className="text-lg">รายรับ-ราบจ่ายแต่ละปี</h1>
       </div>
       <ResponsiveContainer width="100%" height="90%">
         <LineChart

@@ -17,9 +17,9 @@ export default function Modal({
     isOpen && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className={`bg-white rounded-lg shadow-lg w-1/2`}>
-          <h2 className="text-xl mb-4 bg-teal-600 text-white p-4 rounded-t-lg">
+          <h2 className="text-xl mb-4 bg-lamaError text-white p-4 rounded-t-lg">
             {title}
-            <button className="float-right text-gray-300" onClick={onClose}>
+            <button className="float-right text-gray-100" onClick={onClose}>
               <i className="fa-solid fa-xmark"></i>
             </button>
           </h2>

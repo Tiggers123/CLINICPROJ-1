@@ -78,6 +78,7 @@ const ExpensePage = () => {
         orderno: orderno,
         amount: amount,
         optional: optional,
+        date: dayjs().format("YYYY-MM-DD"),
       };
 
       if (id !== "") {
@@ -160,13 +161,13 @@ const ExpensePage = () => {
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 shadow-md mt-1">
       {/* TOP SECTION */}
-      <div className="flex justify-between items-center mt-2">
+      <div className="flex justify-between items-center mt-2 gap-x-4 sm:gap-x-2">
         <button
-          className="bg-lamaError text-white px-4 py-2 rounded-md hover:bg-lamaPink transition"
+          className="bg-lamaError text-white p-2 flex items-center justify-center rounded-md hover:bg-pink-400 transition"
           onClick={handleOpenModal}
         >
           <i className="fa-solid fa-plus mr-2"></i>
-          เพิ่มรายจ่าย
+          <span className="hidden sm:inline">เพิ่มรายจ่าย</span>
         </button>
         <TableSearch
           value={searchQuery}
@@ -193,7 +194,7 @@ const ExpensePage = () => {
             </td>
             <td className="px-6 py-4 text-center">
               <button
-                className="w-8 h-8  text-white bg-lamaError hover:bg-lamaPink px-3 py-1 rounded-full"
+                className="w-8 h-8  text-white bg-lamaError hover:bg-pink-400 px-3 py-1 rounded-full"
                 onClick={() => handleEdit(item.id)}
               >
                 <div className="flex items-center justify-center">
@@ -204,8 +205,9 @@ const ExpensePage = () => {
                 className="w-8 h-8 text-white bg-red-500 hover:bg-red-300 px-3 py-1 rounded-full ml-2"
                 onClick={() => handleDelete(item.id)}
               >
-                <div className="flex items-center justify-center"><i className="fa-solid fa-trash "></i></div>
-                
+                <div className="flex items-center justify-center">
+                  <i className="fa-solid fa-trash "></i>
+                </div>
               </button>
             </td>
           </tr>
@@ -249,7 +251,7 @@ const ExpensePage = () => {
         </div>
         <div className="mt-4 text-right">
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+            className="bg-lamaError text-white px-4 py-2 rounded-md hover:bg-pink-400"
             onClick={handleSave}
           >
             บันทึก
