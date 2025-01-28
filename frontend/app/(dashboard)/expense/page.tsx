@@ -15,7 +15,7 @@ const ExpensePage = () => {
   const [orderno, setOrderno] = useState("");
   const [optional, setOptional] = useState("");
   const [amount, setAmount] = useState("");
-  const [id, setId] = useState("");
+  const [id, setId] = useState(0); // id เอาไว้แก้ไขรายการ
   const [searchQuery, setSearchQuery] = useState("");
   const [expense, setExpense] = useState([
     {
@@ -40,15 +40,23 @@ const ExpensePage = () => {
       date: "2025-01-15",
     },
   ]);
+  {
+    /*PAGINATION*/
+  }
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
 
   useEffect(() => {
-    // fetchData();
-  }, []);
+    fetchData();
+  }, [page]); //เพิ่ม dependencies ให้กับ useEffect เมื่อไหร่ค่าของ page เปลี่ยนให้ไปดึงข้อมูลใหม่ทันที
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${config.apiUrl}/expense/list`);
-      setExpense(res.data);
+      const res = await axios.get(`${config.apiUrl}/expense/list/${page}`);
+      setExpense(res.data.expense);
+      setTotalRows(res.data.totalRows);
+      setTotalPage(res.data.totalPages);
     } catch (err: any) {
       Swal.fire({
         icon: "error",
@@ -66,11 +74,13 @@ const ExpensePage = () => {
     setIsShowModal(false);
   };
 
-  const handleClearForm = () => {
-    setId("");
-    setAmount("");
-    setOptional("");
-  };
+ const handleClear = () => {
+   setOrderno("");
+   setAmount("");
+   setOptional("");
+   setId(0);
+ };
+
 
   const handleSave = async () => {
     try {
@@ -81,20 +91,28 @@ const ExpensePage = () => {
         date: dayjs().format("YYYY-MM-DD"),
       };
 
-      if (id !== "") {
-        await axios.put(`${config.apiUrl}/expense/update/${id}`, payload);
-      } else {
-        await axios.post(`${config.apiUrl}/expense/create`, payload);
-      }
+       if (id === 0) {
+         // เพิ่มรายการ
+         await axios.post(`${config.apiUrl}/expense/create`, payload);
+       } else {
+         // แก้ไขรายการ
+         await axios.put(`${config.apiUrl}/expense/update/${id}`, payload);
+         setId(0);
+       }
+        Swal.fire({
+                icon: 'success',
+                title: 'บันทึกข้อมูลเรียบร้อย',
+                text: 'ข้อมูลถูกบันทึกเรียบร้อย',
+                timer: 2000
+            });
 
-      handleClearForm();
-      handleCloseModal();
-      fetchData();
-    } catch (err: any) {
-      Swal.fire({
-        icon: "error",
-        title: "ผิดพลาด",
-        text: err.message,
+            handleCloseModal();
+            fetchData();
+        } catch (error: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'ผิดพลาด',
+                text: error.message,
       });
     }
   };
@@ -121,17 +139,16 @@ const ExpensePage = () => {
     }
   };
 
-   const handleEdit = (id: number) => {
-     const expenses = expense.find((expense: any) => expense.id === id) as any;
-
-     if (expenses) {
-       setId(expenses.id);
-       setOrderno(expenses.orderno);
-       setAmount(expenses.amount);
-       setOptional(expenses.optional);
-       handleOpenModal();
-     }
-   };
+  const handleEdit = (id: number) => {
+    const expenses = expense.find((expense: any) => expense.id === id) as any;
+ if (expenses) {
+   setId(expenses.id);
+   setOrderno(expenses.orderno);
+   setAmount(expenses.amount);
+   setOptional(expenses.optional ?? "");
+   handleOpenModal();
+ }
+  };
 
   const filteredExpenses = expense.filter(
     (item) =>
@@ -164,7 +181,10 @@ const ExpensePage = () => {
       <div className="flex justify-between items-center mt-2 gap-x-4 sm:gap-x-2">
         <button
           className="bg-lamaError text-white p-2 flex items-center justify-center rounded-md hover:bg-pink-400 transition"
-          onClick={handleOpenModal}
+          onClick={() => {
+            handleClear();
+            handleOpenModal();
+          }}
         >
           <i className="fa-solid fa-plus mr-2"></i>
           <span className="hidden sm:inline">เพิ่มรายจ่าย</span>
@@ -215,8 +235,16 @@ const ExpensePage = () => {
       />
       {/* PAGINATION SECTION */}
       <div className="mt-4">
-        <Pagination />
+        <Pagination
+          currentPage={page}
+          totalPages={totalPage}
+          onPageChange={(newPage) =>
+            setPage(Math.max(1, Math.min(newPage, totalPage)))
+          }
+          totalRows={totalRows}
+        />
       </div>
+
       <Modal
         isOpen={isShowModal}
         title="บันทึกรายจ่าย"
