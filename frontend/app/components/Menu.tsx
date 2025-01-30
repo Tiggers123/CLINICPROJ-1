@@ -33,7 +33,7 @@ const menuItems = [
             />
           </svg>
         ),
-        label: "ระบบจัดการคลีนิค",
+        label: "บันทึกใบเสร็จ",
         href: "/manage",
       },
       {
@@ -49,7 +49,7 @@ const menuItems = [
             />
           </svg>
         ),
-        label: "บันทึกค่าใช้จ่าย",
+        label: "บันทึกรายจ่าย",
         href: "/expense",
       },
       {
@@ -90,9 +90,9 @@ const menuItems = [
 
 const Menu = () => {
   return (
-    <div className="mt-8 text-sm flex justify-center items-center">
+    <div className="mt-2 text-sm flex justify-center items-center">
       {menuItems.map((i) => (
-        <div className="flex flex-col gap-2" key={i.title}>
+        <div className="flex flex-col gap-4" key={i.title}>
           {i.items.map((item) => (
             <Link
               href={item.href}

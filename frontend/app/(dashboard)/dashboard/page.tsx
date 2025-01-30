@@ -22,7 +22,7 @@ const Page = () => {
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalSale, setTotalSale] = useState(0);
-  const [listYears, setListYears] = useState<number[]>([]);
+  const [listYears, setListYears] = useState<any[]>([]);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
@@ -94,13 +94,13 @@ const Page = () => {
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row">
       <div className="w-full  flex flex-col gap-8 -mt-3">
-        <div className="w-full flex flex-col gap-8 ">
+        <div className="w-full flex flex-col  ">
           {/*USECARD*/}
           <div className="flex gap-4 justify-between flex-wrap">
             {cardData.map((card, index) => (
               <div
                 key={index}
-                className="rounded-2xl odd:bg-lamaPink even:bg-white p-4 flex-1 shadow-md flex-grow"
+                className="rounded-2xl bg-white p-4 flex-1 shadow-md flex-grow"
               >
                 <h2 className="capitalize text-md text-black">{card.title}</h2>
                 <span className="text-[15px] bg-gray-50 px-2 py-1 rounded-full text-black">

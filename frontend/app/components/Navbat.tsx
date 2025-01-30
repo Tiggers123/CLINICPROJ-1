@@ -10,7 +10,7 @@ const Navbar = () => {
     useEffect(() => {
       const pageNames: Record<string, string> = {
         "/dashboard": "แดชบอร์ด",
-        "/manage": "บันทึกรายรับ",
+        "/manage": "บันทึกใบเสร็จ",
         "/expense":"บันทึกรายจ่าย",
         "/billing": "ใบเสร็จ",
       };
@@ -19,13 +19,13 @@ const Navbar = () => {
     }, [pathname]);
 
   return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-md m-4 shadow-md">
+    <div className="flex items-center justify-between p-4 bg-white rounded-md m-4 mt-5 shadow-md">
       {/* LEFT SECTION */}
       <div className="flex items-center gap-4">
         <h1 className="text-2xl  whitespace-nowrap">{pageName}</h1>
       </div>
       {/* RIGHT SECTION */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 ">
         <div className="flex flex-col text-right">
           <span className="text-xs font-medium leading-3">John Doe</span>
           <span className="text-[10px] text-gray-500">Admin</span>

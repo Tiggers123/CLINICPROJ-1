@@ -1,46 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Table from "@/app/components/Table";
 import TableSearch from "@/app/components/TableSearch";
-import Pagination from "@/app/components/Pagination";
-import InteractiveRow from "@/app/components/InteractiveRow";
+import Swal from "sweetalert2";
+import axios from "axios";
+import { config } from "../../config";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import "@fortawesome/fontawesome-free/css/all.css";
 
-type Bill = {
-  id: number;
-  date: string;
-  optional: string;
-  amount: number;
-};
+ interface Bill {
+   date: string;
+   name: string;
+   totalamount: number;
+ }
 
+ 
 const BillRecord = () => {
+  const [sellList, setSellList] = useState<Bill[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`${config.apiUrl}/sell/history`);
+      setSellList(res.data);
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: error.message,
+      });
+    }
+  };
+
 
   const data: Bill[] = [
-    { id: 1, date: "2023-01-01 10:00", optional: "Note 1", amount: 100 },
-    { id: 2, date: "2023-01-02 14:30", optional: "Note 2", amount: 200 },
-    { id: 3, date: "2023-01-03 16:15", optional: "Note 3", amount: 300 },
+    { date: "01/01/2023 ", name: "หมายเหตุ 1", totalamount: 100 },
+    { date: "02/05/2023 ", name: "หมายเหตุ 2", totalamount: 200 },
+    { date: "03/04/2023 ", name: "หมายเหตุ 3", totalamount: 300 },
   ];
 
-  const filteredData = data.filter((bill) =>
-    bill.id.toString().includes(searchQuery)
-  );
+     const filteredData = data.filter((item) =>
+       dayjs(item.date.trim()).format("DD/MM/YYYY").includes(searchQuery.trim())
+     );
 
   const columns = [
-    { header: "Order ID", accessor: "id" },
+    { header: "วันที่", accessor: "date" },
     {
-      header: "Date/Time",
-      accessor: "date",
-      className: "hidden md:table-cell",
-    },
-    {
-      header: "Optional",
+      header: "รายการ",
       accessor: "optional",
       className: "hidden md:table-cell",
     },
-    { header: "Income", accessor: "amount", className: "hidden md:table-cell" },
-    { header: "Action", accessor: "action", className: "text-center" },
+    { header: "ราคา", accessor: "amount", className: "hidden md:table-cell" },
+    { header: "พิมพ์บิล", accessor: "action", className: "text-center" },
   ];
+
+
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 shadow-md mt-1">
@@ -50,6 +71,7 @@ const BillRecord = () => {
           <TableSearch
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="ค้นหาวันที่ (DD/MM/YYYY)"
           />
         </div>
       </div>
@@ -58,13 +80,33 @@ const BillRecord = () => {
       <Table
         columns={columns}
         data={filteredData}
-        renderRow={(item) => <InteractiveRow key={item.id} item={item} />}
+        renderRow={(item) => (
+          <tr key={item.id} className="hover:bg-gray-50">
+            <td className="px-6 py-4 text-center ">
+              {/* {dayjs(item.payDate).format("DD/MM/YYYY")} */}
+              {item.date}
+            </td>
+            <td className="px-6 py-4 text-center hidden md:table-cell">
+              {item.name}
+            </td>
+            <td className="px-6 py-4 text-center hidden md:table-cell">
+              {/* {item.toLocaleString()} */}
+              {item.totalamount.toLocaleString()}
+            </td>
+            <td className="px-6 py-4 text-center">
+              <div className="flex justify-center">
+                <a
+                  className="w-7 h-7 flex items-center justify-center rounded-full bg-pink-400 hover:bg-pink-500 text-white"
+                  target="_blank"
+                  // href={`manage/print?id=${item.id}`}
+                  href={`/manage/print?id=${item.id}`}>
+                  <i className="fa-solid fa-print"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+        )}
       />
-
-      {/* PAGINATION SECTION */}
-      <div className="mt-4">
-        <Pagination />
-      </div>
     </div>
   );
 };

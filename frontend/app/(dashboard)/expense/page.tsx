@@ -46,6 +46,7 @@ const ExpensePage = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+ 
 
   useEffect(() => {
     fetchData();
@@ -192,6 +193,7 @@ const ExpensePage = () => {
         <TableSearch
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search Order ID..."
         />
       </div>
       {/* LIST SECTION */}
@@ -199,10 +201,8 @@ const ExpensePage = () => {
         columns={columns}
         data={filteredExpenses}
         renderRow={(item, index) => (
-          <tr key={index}>
-            <td className="px-6 py-4 text-center text-sm font-semibold">
-              {item.orderno}
-            </td>
+          <tr className="hover:bg-gray-50" key={index}>
+            <td className="px-6 py-4 text-center text-sm ">{item.orderno}</td>
             <td className="px-6 py-4 text-center hidden md:table-cell">
               {item.amount.toLocaleString()}
             </td>
@@ -214,7 +214,7 @@ const ExpensePage = () => {
             </td>
             <td className="px-6 py-4 text-center">
               <button
-                className="w-8 h-8  text-white bg-lamaError hover:bg-pink-400 px-3 py-1 rounded-full"
+                className="w-8 h-8  text-white bg-lamaError hover:bg-pink-400  rounded-full"
                 onClick={() => handleEdit(item.id)}
               >
                 <div className="flex items-center justify-center">
@@ -222,7 +222,7 @@ const ExpensePage = () => {
                 </div>
               </button>
               <button
-                className="w-8 h-8 text-white bg-red-500 hover:bg-red-300 px-3 py-1 rounded-full ml-2"
+                className="w-8 h-8 text-white bg-red-500 hover:bg-red-300  rounded-full ml-2"
                 onClick={() => handleDelete(item.id)}
               >
                 <div className="flex items-center justify-center">

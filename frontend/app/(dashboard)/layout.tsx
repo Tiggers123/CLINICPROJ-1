@@ -12,13 +12,13 @@ export default function DashboardLayout({
     <div className="h-screen flex">
       {/* LEFT */}
       <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4">
-        <Link
-          href="/"
-          className="flex items-center justify-center "
+        <div
+          
+          className="flex items-center justify-center mt-5 "
         >
-          <Image src="/logo.png" alt="logo" width={100} height={100} />
+          <Image src="/logo.png" alt="logo" width={150} height={150} />
           {/* <span className="hidden lg:block font-bold">CLINIC TIGER</span> */}
-        </Link>
+        </div>
         <Menu />
       </div>
       {/* RIGHT */}
@@ -29,3 +29,5 @@ export default function DashboardLayout({
     </div>
   );
 }
+
+//bg-[#F7F8FA]

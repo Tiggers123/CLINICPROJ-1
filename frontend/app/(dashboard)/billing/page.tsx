@@ -1,257 +1,281 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState } from "react";
+import { config } from "../../config";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+import Table from "@/app/components/Table";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
+const exampleSells = [
+  {
+    id: 1,
+    product: {
+      code: "P001",
+      name: "Product A",
+    },
+    qty: 1,
+    price: 100,
+  },
+  {
+    id: 2,
+    product: {
+      code: "P002",
+      name: "Product B",
+    },
+    qty: 1,
+    price: 200,
+  },
+  {
+    id: 3,
+    product: {
+      code: "P003",
+      name: "Product C",
+    },
+    qty: 1,
+    price: 300,
+  },
+];
 
 const Page = () => {
-  // State สำหรับแถว
-  const [rows, setRows] = useState([
-    {
-      id: 1,
-      item: "",
-      accountCode: "",
-      quantity: "",
-      unitPrice: "",
-      totalPrice: 0,
-    },
-  ]);
-  const [discount, setDiscount] = useState("");
-  const [finalValue, setFinalValue] = useState(0);
+  const [code, setCode] = useState("");
+  const [price, setPrice] = useState(0);
+  const [qty, setQty] = useState(0);
+  const [sells, setSells] = useState(exampleSells); // ข้อมูลทั้งหมด
+  const [id, setId] = useState(0); // ข้อมูล id เอาไว้แก้ไข หรือลบรายการ
+  const [discount, setDiscount] = useState(0); // ส่วนลด %
+  const [finalAmount, setFinalAmount] = useState(0); // ราคาหลังหักส่วนลด
+  const [totalAmount, setTotalAmount] = useState(0);
+  const router = useRouter();
 
-  // คำนวณผลรวมทั้งหมด
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${config.apiUrl}/sell/list`);
+      setSells(response.data);
+
+      let total = 0;
+      for (let i = 0; i < response.data.length; i++) {
+        total += response.data[i].price;
+      }
+      setTotalAmount(total);
+      calculateDiscount(total, discount);
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: error.message,
+      });
+    }
+  };
+
+  const calculateDiscount = (total: number, discount: number): void => {
+    const discountedPrice = total - (total * discount) / 100;
+    setFinalAmount(discountedPrice);
+  };
+
+
+  const handleSave = async () => {
+    try {
+      const payload = {
+        code: code,
+        price: price,
+        qty: qty,
+      };
+      await axios.post(`${config.apiUrl}/sell/create`, payload);
+      fetchData();
+    } catch (error: any) {
+      if (error.response.status === 400) {
+        Swal.fire({
+          icon: "error",
+          title: "ไม่พบรายการสินค้า",
+          text: "ไม่พบรายการสินค้า หรือไม่มีในสต้อก",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: error.message,
+        });
+      }
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      const button = await Swal.fire({
+        text: "ลบรายการนี้หรือไม่?",
+        title: "คุณต้องการลบรายการนี้หรือไม่?",
+        icon: "question",
+        showCancelButton: true,
+        showConfirmButton: true,
+      });
+
+      if (button.isConfirmed) {
+        await axios.delete(`${config.apiUrl}/sell/remove/${id}`);
+        fetchData();
+      }
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: error.message,
+      });
+    }
+  };
+
+  const handleConfirm = async () => {
+    try {
+      const button = await Swal.fire({
+        text: "ยืนยันการขายหรือไม่?",
+        title: "ยืนยันการขาย",
+        icon: "question",
+        showCancelButton: true,
+        showConfirmButton: true,
+      });
+
+      if (button.isConfirmed) {
+        await axios.get(`${config.apiUrl}/sell/confirm`);
+        fetchData();
+      }
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: error.message,
+      });
+    }
+  };
+
   useEffect(() => {
-    const total = rows.reduce((sum, row) => sum + row.totalPrice, 0);
-    setFinalValue(total - (parseFloat(discount) || 0));
-  }, [rows, discount]);
+    fetchData();
+  }, []);
 
-  // อัปเดตค่าของแถว
-  const updateRow = (id: number, field: string, value: string) => {
-    setRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === id
-          ? {
-              ...row,
-              [field]: value,
-              totalPrice:
-                field === "quantity" || field === "unitPrice"
-                  ? (parseFloat(field === "quantity" ? value : row.quantity) ||
-                      0) *
-                    (parseFloat(
-                      field === "unitPrice" ? value : row.unitPrice
-                    ) || 0)
-                  : row.totalPrice,
-            }
-          : row
-      )
-    );
-  };
+    useEffect(() => {
+      calculateDiscount(totalAmount, discount);
+    }, [discount, totalAmount]);
 
-  // เพิ่มแถว
-  const addRow = () => {
-    setRows((prevRows) => [
-      ...prevRows,
-      {
-        id: prevRows.length + 1,
-        item: "",
-        accountCode: "",
-        quantity: "",
-        unitPrice: "",
-        totalPrice: 0,
-      },
-    ]);
-  };
 
-  // ฟังก์ชันสำหรับพิมพ์ใบเสร็จ
-  const printReceipt = () => {
-    const receiptHTML = `
-      <html>
-        <head>
-          <title>ใบเสร็จ</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h1 { text-align: center; }
-            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            table, th, td { border: 1px solid #ddd; }
-            th, td { padding: 8px; text-align: left; }
-            .text-right { text-align: right; }
-          </style>
-        </head>
-        <body>
-          <h1>ใบเสร็จรับเงิน</h1>
-          <p>เลขที่เอกสาร: EXP-9999999</p>
-          <p>วันที่สร้าง: 11-11/2024</p>
-          <table>
-            <thead>
-              <tr>
-                <th>ลำดับ</th>
-                <th>รายการ</th>
-                <th>จำนวน</th>
-                <th>ราคา/หน่วย</th>
-                <th>ราคารวม</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rows
-                .map(
-                  (row) => `
-                  <tr>
-                    <td>${row.id}</td>
-                    <td>${row.item || "-"}</td>
-                    <td class="text-right">${row.quantity || "0"}</td>
-                    <td class="text-right">${row.unitPrice || "0.00"}</td>
-                    <td class="text-right">${row.totalPrice.toFixed(2)}</td>
-                  </tr>
-                `
-                )
-                .join("")}
-            </tbody>
-          </table>
-          <p class="text-right">ส่วนลด: ${discount || "0.00"} บาท</p>
-          <h2 class="text-right">ยอดสุทธิ: ${finalValue.toFixed(2)} บาท</h2>
-        </body>
-      </html>
-    `;
-    const printWindow = window.open("", "_blank", "width=800,height=600");
-    printWindow?.document.write(receiptHTML);
-    printWindow?.document.close();
-    printWindow?.print();
-  };
+  const columns = [
+    { header: "Code", accessor: "product.code", className: "text-center" },
+    {
+      header: "การรักษา",
+      accessor: "product.name",
+      className: "text-center hidden sm:table-cell ",
+    },
+    {
+      header: "จำนวน",
+      accessor: "qty",
+      className: "text-center hidden sm:table-cell",
+    },
+    { header: "ราคา/หน่วย", accessor: "price", className: "text-center" },
+    { header: "ลบข้อมูล", accessor: "actions", className: "text-center" },
+  ];
+  //ไม่แน่ใจว่า tr key ต้อง index ไหม
+  const renderRow = (item: any, index: number) => (
+    <tr key={item.id} className="text-center hover:bg-gray-50">
+      <td className="px-6 py-4">{item.product.code}</td>
+      <td className="px-6 py-4 hidden sm:table-cell">{item.product.name}</td>
+      <td className="px-6 py-4 hidden sm:table-cell">{item.qty}</td>
+      <td className="px-6 py-4 ">{item.price.toLocaleString()}</td>
+      <td className="px-6 py-4 ">
+        <button
+          className="w-8 h-8 text-white bg-red-500 hover:bg-red-300  rounded-full "
+          onClick={() => handleDelete(item.id)}
+        >
+          <i className="fa-solid fa-trash-alt"></i>
+        </button>
+      </td>
+    </tr>
+  );
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 shadow-md mt-1">
-      <div className="p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl  mb-6">บันทึกค่าใช้จ่าย</h1>
-        <div className="bg-[#FFC9D6]  p-6 rounded-lg flex flex-col md:flex-row items-center gap-6 mb-8">
-          <div className="flex flex-col">
-            <p className="font-semibold">เลขที่เอกสาร : EXP-9999999</p>
-            <p>วันที่สร้าง : 11-11/2024</p>
-          </div>
-          <div className="flex flex-wrap gap-6 ml-auto justify-start md:justify-end">
-            <div className="flex flex-col text-left gap-2">
-              <span>ผู้ติดต่อ</span>
-              <button className="flex items-center bg-white border border-[#FB6F92] px-4 py-2 rounded-lg shadow-sm hover:bg-gray-100">
-                🔍 Search for Records
-              </button>
-            </div>
-            <div className="flex flex-col text-left gap-2">
-              <span>ข้อมูลภาษี</span>
-              <button className="flex items-center bg-white border border-[#FB6F92] px-4 py-2 rounded-lg shadow-sm hover:bg-gray-100">
-                🔍 Search for Records
-              </button>
-            </div>
-            <div className="flex flex-col text-left gap-2">
-              <span>วันที่กำหนด</span>
-              <button className="flex items-center bg-white border border-[#FB6F92] px-4 py-2 rounded-lg shadow-sm hover:bg-gray-100">
-                🔍 Search for Records
-              </button>
-            </div>
-          </div>
+      <div className="flex justify-end">
+        <button
+          className=" bg-lamaError text-white px-2 py-2 rounded-md mb-1  hover:bg-pink-400 transition"
+          onClick={() => router.push("/manage")}
+        >
+          <i className="fa-solid fa-file-alt mr-3 "></i>
+          ประวัติการขาย
+        </button>
+      </div>
+      <div className="flex gap-2 items-end">
+        <div className="w-full">
+          <div>รหัส</div>
+          <input
+            className="p-2 rounded-md border border-gray-600 w-full text-sm"
+            type="text"
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Code"
+          />
+        </div>
+        <div className="w-full">
+          <div>จำนวน</div>
+          <input
+            className="p-2 rounded-md border border-gray-600 w-full text-sm"
+            type="number"
+            onChange={(e) => setQty(Number(e.target.value))}
+            placeholder="จำนวน"
+          />
+        </div>
+        <div className="w-full">
+          <div>ราคา</div>
+          <input
+            className="p-2 rounded-md border border-gray-600 w-full text-sm "
+            type="number"
+            onChange={(e) => setPrice(Number(e.target.value))}
+            placeholder="ราคา"
+          />
         </div>
 
-        <div className="bg-[#FFC9D6] p-6 rounded-lg shadow-lg max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="grid grid-cols-6 gap-6 font-semibold text-center mb-4">
-            <span>ลำดับ</span>
-            <span>รายการ</span>
-            <span>รหัสบัญชี</span>
-            <span>จำนวน</span>
-            <span>ราคา/หน่วย</span>
-            <span>ราคารวม</span>
+        <button
+          className="bg-lamaError text-white px-4 py-2.5 rounded-md text-sm hover:bg-pink-400 transition flex items-center gap-2"
+          onClick={handleSave}
+        >
+          <i className="fa-solid fa-save"></i>
+          <span>บันทึก</span>
+        </button>
+      </div>
+      <Table columns={columns} data={sells} renderRow={renderRow} />
+      {sells.length > 0 && (
+        <>
+          <div className=" ml-2 mr-2 mt-4 flex justify-between items-center">
+            <div>ยอดเงินทั้งหมด</div>
+            <div className="font-bold bg-gray-100 px-4 py-2 rounded-md">
+              {totalAmount.toLocaleString()}
+            </div>
+          </div>
+          {/*ส่วนลดเดี่ยวมาแก้*/}
+          <div className="ml-2 mr-2 mt-2 flex justify-between items-center">
+            <div>ส่วนลด (%)</div>
+            <input
+              className="p-2 rounded-md border border-gray-600 w-20 text-center"
+              type="number"
+              value={discount}
+              onChange={(e) => setDiscount(Number(e.target.value))}
+              placeholder="%"
+            />
           </div>
 
-          {/* Rows */}
-          {rows.map((row) => (
-            <div
-              className="grid grid-cols-6 gap-6 items-center mb-4"
-              key={row.id}
-            >
-              <span className="text-center">{row.id}</span>
-              <input
-                type="text"
-                value={row.item}
-                onChange={(e) => updateRow(row.id, "item", e.target.value)}
-                placeholder="รายการ"
-                className="border p-2 rounded-lg"
-              />
-              <input
-                type="text"
-                value={row.accountCode}
-                onChange={(e) =>
-                  updateRow(row.id, "accountCode", e.target.value)
-                }
-                placeholder="รหัสบัญชี"
-                className="border p-2 rounded-lg"
-              />
-              <input
-                type="text"
-                value={row.quantity}
-                onChange={(e) => updateRow(row.id, "quantity", e.target.value)}
-                placeholder="จำนวน"
-                className="border p-2 rounded-lg"
-              />
-              <input
-                type="text"
-                value={row.unitPrice}
-                onChange={(e) => updateRow(row.id, "unitPrice", e.target.value)}
-                placeholder="ราคา/หน่วย"
-                className="border p-2 rounded-lg"
-              />
-              <input
-                type="text"
-                value={row.totalPrice.toFixed(2)}
-                readOnly
-                placeholder="ราคารวม"
-                className="border p-2 rounded-lg"
-              />
+          <div className="ml-2 mr-2 mt-2 flex justify-between items-center">
+            <div>จำนวนเงิน</div>
+            <div className="font-bold bg-gray-100 px-4 py-2 rounded-md">
+              {finalAmount.toLocaleString()}
             </div>
-          ))}
+          </div>
 
-          {/* Add Button */}
-          <div className="mb-6">
+          <div className="mt-5 text-center">
             <button
-              onClick={addRow}
-              className="bg-[#FB6F92] text-white px-4 py-2 rounded-lg shadow hover:bg-pink-500"
+              className="bg-lamaError text-white px-6 py-2 rounded-md  hover:bg-pink-400 transition"
+              onClick={handleConfirm}
             >
-              เพิ่มรายการ +
+              <i className="fa-solid fa-check mr-2"></i>
+              ยืนยันการขาย
             </button>
           </div>
-
-          {/* Summary */}
-          <div className="grid grid-cols-3 gap-6 mt-6">
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <span>ส่วนลดรวม</span>
-                <input
-                  type="text"
-                  value={discount}
-                  onChange={(e) => setDiscount(e.target.value)}
-                  placeholder="บาท"
-                  className="border p-2 rounded-lg w-24"
-                />
-              </div>
-              <div className="flex justify-between items-center mb-6">
-                <span>มูลค่าหลังส่วนลด</span>
-                <input
-                  type="text"
-                  value={finalValue.toFixed(2)}
-                  readOnly
-                  placeholder="บาท"
-                  className="border p-2 rounded-lg w-24"
-                />
-              </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={printReceipt}
-                  className="bg-[#FB6F92] text-white px-6 py-2 rounded-lg"
-                >
-                  พิมพ์ใบเสร็จ
-                </button>
-                <button className="bg-[#FB6F92] text-white px-6 py-2 rounded-lg">
-                  มูลค่ารวม {finalValue.toFixed(2)} บาท
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
