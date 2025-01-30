@@ -46,7 +46,6 @@ const ExpensePage = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
- 
 
   useEffect(() => {
     fetchData();
@@ -75,13 +74,12 @@ const ExpensePage = () => {
     setIsShowModal(false);
   };
 
- const handleClear = () => {
-   setOrderno("");
-   setAmount("");
-   setOptional("");
-   setId(0);
- };
-
+  const handleClear = () => {
+    setOrderno("");
+    setAmount("");
+    setOptional("");
+    setId(0);
+  };
 
   const handleSave = async () => {
     try {
@@ -92,28 +90,28 @@ const ExpensePage = () => {
         date: dayjs().format("YYYY-MM-DD"),
       };
 
-       if (id === 0) {
-         // เพิ่มรายการ
-         await axios.post(`${config.apiUrl}/expense/create`, payload);
-       } else {
-         // แก้ไขรายการ
-         await axios.put(`${config.apiUrl}/expense/update/${id}`, payload);
-         setId(0);
-       }
-        Swal.fire({
-                icon: 'success',
-                title: 'บันทึกข้อมูลเรียบร้อย',
-                text: 'ข้อมูลถูกบันทึกเรียบร้อย',
-                timer: 2000
-            });
+      if (id === 0) {
+        // เพิ่มรายการ
+        await axios.post(`${config.apiUrl}/expense/create`, payload);
+      } else {
+        // แก้ไขรายการ
+        await axios.put(`${config.apiUrl}/expense/update/${id}`, payload);
+        setId(0);
+      }
+      Swal.fire({
+        icon: "success",
+        title: "บันทึกข้อมูลเรียบร้อย",
+        text: "ข้อมูลถูกบันทึกเรียบร้อย",
+        timer: 2000,
+      });
 
-            handleCloseModal();
-            fetchData();
-        } catch (error: any) {
-            Swal.fire({
-                icon: 'error',
-                title: 'ผิดพลาด',
-                text: error.message,
+      handleCloseModal();
+      fetchData();
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "ผิดพลาด",
+        text: error.message,
       });
     }
   };
@@ -142,13 +140,13 @@ const ExpensePage = () => {
 
   const handleEdit = (id: number) => {
     const expenses = expense.find((expense: any) => expense.id === id) as any;
- if (expenses) {
-   setId(expenses.id);
-   setOrderno(expenses.orderno);
-   setAmount(expenses.amount);
-   setOptional(expenses.optional ?? "");
-   handleOpenModal();
- }
+    if (expenses) {
+      setId(expenses.id);
+      setOrderno(expenses.orderno);
+      setAmount(expenses.amount);
+      setOptional(expenses.optional ?? "");
+      handleOpenModal();
+    }
   };
 
   const filteredExpenses = expense.filter(

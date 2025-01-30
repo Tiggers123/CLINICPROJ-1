@@ -10,13 +10,12 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import "@fortawesome/fontawesome-free/css/all.css";
 
- interface Bill {
-   date: string;
-   name: string;
-   totalamount: number;
- }
+interface Bill {
+  date: string;
+  name: string;
+  totalamount: number;
+}
 
- 
 const BillRecord = () => {
   const [sellList, setSellList] = useState<Bill[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,16 +38,15 @@ const BillRecord = () => {
     }
   };
 
-
   const data: Bill[] = [
     { date: "01/01/2023 ", name: "หมายเหตุ 1", totalamount: 100 },
     { date: "02/05/2023 ", name: "หมายเหตุ 2", totalamount: 200 },
     { date: "03/04/2023 ", name: "หมายเหตุ 3", totalamount: 300 },
   ];
 
-     const filteredData = data.filter((item) =>
-       dayjs(item.date.trim()).format("DD/MM/YYYY").includes(searchQuery.trim())
-     );
+  const filteredData = data.filter((item) =>
+    dayjs(item.date.trim()).format("DD/MM/YYYY").includes(searchQuery.trim())
+  );
 
   const columns = [
     { header: "วันที่", accessor: "date" },
@@ -60,8 +58,6 @@ const BillRecord = () => {
     { header: "ราคา", accessor: "amount", className: "hidden md:table-cell" },
     { header: "พิมพ์บิล", accessor: "action", className: "text-center" },
   ];
-
-
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 shadow-md mt-1">
@@ -99,7 +95,8 @@ const BillRecord = () => {
                   className="w-7 h-7 flex items-center justify-center rounded-full bg-pink-400 hover:bg-pink-500 text-white"
                   target="_blank"
                   // href={`manage/print?id=${item.id}`}
-                  href={`/manage/print?id=${item.id}`}>
+                  href={`/manage/print?id=${item.id}`}
+                >
                   <i className="fa-solid fa-print"></i>
                 </a>
               </div>

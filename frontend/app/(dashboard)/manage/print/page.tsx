@@ -33,7 +33,7 @@
 //     const style = document.createElement("style");
 //     style.textContent = `
 //       @media print {
-//           @page { 
+//           @page {
 //               size: A4 landscape;
 //               margin: 0;
 //           }
