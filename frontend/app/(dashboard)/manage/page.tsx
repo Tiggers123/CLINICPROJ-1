@@ -9,6 +9,7 @@ import { config } from "../../config";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import "@fortawesome/fontawesome-free/css/all.css";
+import Pagination from "@/app/components/Pagination";
 
 interface Bill {
   date: string;
@@ -16,19 +17,34 @@ interface Bill {
   totalamount: number;
 }
 
+
+
+
 const BillRecord = () => {
   const [sellList, setSellList] = useState<Bill[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  /*pagination*/
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+   useEffect(() => {
+     fetchData();
+   }, [page]);
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${config.apiUrl}/sell/history`);
-      setSellList(res.data);
+      // const res = await axios.get(`${config.apiUrl}/sell/history`);
+      // setSellList(res.data);
+      // const resp = await axios.get(`${config.apiUrl}/sell/list/${page}`);
+      // setSellList(resp.data.sellList);
+      // setTotalRows(resp.data.totalRows);
+      // setTotalPage(resp.data.totalPages);
+      const { data } = await axios.get(`${config.apiUrl}/sell/list/${page}`);
+      setSellList(data.sellList);
+      setTotalRows(data.totalRows);
+      setTotalPage(data.totalPages);
     } catch (error: any) {
       Swal.fire({
         icon: "error",
@@ -59,17 +75,27 @@ const BillRecord = () => {
     { header: "พิมพ์บิล", accessor: "action", className: "text-center" },
   ];
 
+  // return (
+  //   <div className="bg-white p-4 rounded-md flex-1 m-4 shadow-md mt-1">
+  //     {/* TOP SECTION */}
+  //     <div className="flex items-center justify-end mb-4">
+  //       <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto mr-2">
+  //         <TableSearch
+  //           value={searchQuery}
+  //           onChange={(e) => setSearchQuery(e.target.value)}
+  //           placeholder="ค้นหาวันที่ (DD/MM/YYYY)"
+  //         />
+  //       </div>
+  //     </div>
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 shadow-md mt-1">
       {/* TOP SECTION */}
       <div className="flex items-center justify-end mb-4">
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto mr-2">
-          <TableSearch
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="ค้นหาวันที่ (DD/MM/YYYY)"
-          />
-        </div>
+        <TableSearch
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="ค้นหาวันที่ (DD/MM/YYYY)"
+        />
       </div>
 
       {/* LIST SECTION */}
@@ -104,6 +130,16 @@ const BillRecord = () => {
           </tr>
         )}
       />
+      <div className="mt-4 ml-1">
+        <Pagination
+          currentPage={page}
+          totalPages={totalPage}
+          onPageChange={(newPage) =>
+            setPage(Math.max(1, Math.min(newPage, totalPage)))
+          }
+          totalRows={totalRows}
+        />
+      </div>
     </div>
   );
 };

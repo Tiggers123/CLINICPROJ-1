@@ -12,37 +12,40 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const ExpensePage = () => {
   const [isShowModal, setIsShowModal] = useState(false);
-  const [orderno, setOrderno] = useState("");
-  const [optional, setOptional] = useState("");
-  const [amount, setAmount] = useState("");
+  const [orderid, setOrderid] = useState("");
+  const [name, setName] = useState("");
+  const [totalprice, setTotalprice] = useState("");
+  const [qty, setQty] = useState("");
   const [id, setId] = useState(0); // id เอาไว้แก้ไขรายการ
   const [searchQuery, setSearchQuery] = useState("");
   const [expense, setExpense] = useState([
     {
       id: 1,
-      orderno: "001",
-      optional: "งานติดตั้ง",
-      amount: 1200,
+      orderid: "001",
+      name: "งานติดตั้ง",
+      totalprice: 1200,
       date: "2025-01-01",
+      qty: "15",
     },
     {
       id: 2,
-      orderno: "002",
-      optional: "งานบำรุงรักษา",
-      amount: 1500,
+      orderid: "002",
+      name: "งานบำรุงรักษา",
+      totalprice: 1500,
       date: "2025-01-10",
+      qty: "35",
     },
     {
       id: 3,
-      orderno: "003",
-      optional: "งานซ่อมแซม",
-      amount: 800,
+      orderid: "003",
+      name: "งานซ่อมแซม",
+      totalprice: 800,
       date: "2025-01-15",
+      qty: "25",
     },
   ]);
-  {
-    /*PAGINATION*/
-  }
+  
+  /*PAGINATION*/
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -75,18 +78,20 @@ const ExpensePage = () => {
   };
 
   const handleClear = () => {
-    setOrderno("");
-    setAmount("");
-    setOptional("");
+    // setOrderid("");
+    setTotalprice("");
+    setName("");
     setId(0);
+    setQty("");
   };
 
   const handleSave = async () => {
     try {
       const payload = {
-        orderno: orderno,
-        amount: amount,
-        optional: optional,
+        // orderid: orderid,
+        totalprice: totalprice,
+        name: name,
+        qty: qty,
         date: dayjs().format("YYYY-MM-DD"),
       };
 
@@ -142,36 +147,43 @@ const ExpensePage = () => {
     const expenses = expense.find((expense: any) => expense.id === id) as any;
     if (expenses) {
       setId(expenses.id);
-      setOrderno(expenses.orderno);
-      setAmount(expenses.amount);
-      setOptional(expenses.optional ?? "");
+      // setOrderid(expenses.orderid);
+      setTotalprice(expenses.totalprice);
+      setQty(expenses.qty);
+      setName(expenses.name ?? "");
       handleOpenModal();
     }
   };
 
   const filteredExpenses = expense.filter(
     (item) =>
-      item.orderno.includes(searchQuery) || item.optional.includes(searchQuery)
+      item.orderid.includes(searchQuery) || item.name.includes(searchQuery)
   );
 
   const columns = [
-    { header: "Order ID", accessor: "orderno" },
+    { header: "เลขไอดี", accessor: "orderid" },
     {
-      header: "Expense",
-      accessor: "amount",
+      header: "รายการสินค้า",
+      accessor: "name",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "จำนวน",
+      accessor: "qty",
       className: "hidden md:table-cell",
     },
     {
-      header: "Remark",
-      accessor: "optional",
+      header: "ราคารวม",
+      accessor: "totalprice",
       className: "hidden md:table-cell",
     },
     {
-      header: "Date/Time",
+      header: "วันที่ทำการซื้อ",
       accessor: "date",
       className: "hidden md:table-cell",
     },
-    { header: "Action", accessor: "actions", className: "text-center" },
+    { header: "แก้ไข/ลบ", accessor: "actions", className: "text-center" },
   ];
 
   return (
@@ -200,12 +212,15 @@ const ExpensePage = () => {
         data={filteredExpenses}
         renderRow={(item, index) => (
           <tr className="hover:bg-gray-50" key={index}>
-            <td className="px-6 py-4 text-center text-sm ">{item.orderno}</td>
+            <td className="px-6 py-4 text-center text-sm ">{item.orderid}</td>
             <td className="px-6 py-4 text-center hidden md:table-cell">
-              {item.amount.toLocaleString()}
+              {item.name}
             </td>
             <td className="px-6 py-4 text-center hidden md:table-cell">
-              {item.optional}
+              {item.qty}
+            </td>
+            <td className="px-6 py-4 text-center hidden md:table-cell">
+              {item.totalprice.toLocaleString()}
             </td>
             <td className="px-6 py-4 text-center hidden md:table-cell ">
               {dayjs(item.date).format("DD/MM/YYYY")}
@@ -232,7 +247,7 @@ const ExpensePage = () => {
         )}
       />
       {/* PAGINATION SECTION */}
-      <div className="mt-4">
+      <div className="mt-4 ml-1">
         <Pagination
           currentPage={page}
           totalPages={totalPage}
@@ -248,33 +263,44 @@ const ExpensePage = () => {
         title="บันทึกรายจ่าย"
         onClose={handleCloseModal}
       >
-        <div>
+        {/* <div>
           <div>เลขไอดี</div>
           <input
             type="text"
-            value={orderno}
-            onChange={(e) => setOrderno(e.target.value)}
+            value={orderid}
+            onChange={(e) => setOrderid(e.target.value)}
             className="border border-gray-300 rounded-md p-2 w-full"
           />
-        </div>
-        <div className="mt-4">
-          <div>ราคา</div>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="border border-gray-300 rounded-md p-2 w-full"
-          />
-        </div>
-        <div className="mt-4">
-          <div>หมายเหตุ</div>
+        </div> */}
+        <div >
+          <div>รายการสินค้า</div>
           <input
             type="text"
-            value={optional}
-            onChange={(e) => setOptional(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="border border-gray-300 rounded-md p-2 w-full"
           />
         </div>
+         <div className="mt-4">
+          <div>จำนวน</div>
+          <input
+            type="number"
+            value={qty}
+            onChange={(e) => setQty(e.target.value)}
+            className="border border-gray-300 rounded-md p-2 w-full"
+          />
+        </div>
+        <div className="mt-4">
+          <div>ราคารวม</div>
+          <input
+            type="number"
+            value={totalprice}
+            onChange={(e) => setTotalprice(e.target.value)}
+            className="border border-gray-300 rounded-md p-2 w-full"
+          />
+        </div>
+       
+
         <div className="mt-4 text-right">
           <button
             className="bg-lamaError text-white px-4 py-2 rounded-md hover:bg-pink-400"
