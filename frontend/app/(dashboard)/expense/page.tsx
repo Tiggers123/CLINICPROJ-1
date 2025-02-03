@@ -10,6 +10,15 @@ import TableSearch from "@/app/components/TableSearch";
 import Pagination from "@/app/components/Pagination";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
+interface Expense {
+  id: number;
+  orderid: string;
+  name: string;
+  totalprice: number;
+  date: string;
+  qty: string;
+}
+
 const ExpensePage = () => {
   const [isShowModal, setIsShowModal] = useState(false);
   const [orderid, setOrderid] = useState("");
@@ -18,33 +27,8 @@ const ExpensePage = () => {
   const [qty, setQty] = useState("");
   const [id, setId] = useState(0); // id เอาไว้แก้ไขรายการ
   const [searchQuery, setSearchQuery] = useState("");
-  const [expense, setExpense] = useState([
-    {
-      id: 1,
-      orderid: "001",
-      name: "งานติดตั้ง",
-      totalprice: 1200,
-      date: "2025-01-01",
-      qty: "15",
-    },
-    {
-      id: 2,
-      orderid: "002",
-      name: "งานบำรุงรักษา",
-      totalprice: 1500,
-      date: "2025-01-10",
-      qty: "35",
-    },
-    {
-      id: 3,
-      orderid: "003",
-      name: "งานซ่อมแซม",
-      totalprice: 800,
-      date: "2025-01-15",
-      qty: "25",
-    },
-  ]);
-  
+  const [expense, setExpense] = useState<Expense[]>([]);
+
   /*PAGINATION*/
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -78,7 +62,6 @@ const ExpensePage = () => {
   };
 
   const handleClear = () => {
-    // setOrderid("");
     setTotalprice("");
     setName("");
     setId(0);
@@ -87,8 +70,15 @@ const ExpensePage = () => {
 
   const handleSave = async () => {
     try {
+      const newOrderId =
+        expense.length > 0
+          ? (parseInt(expense[expense.length - 1].orderid) + 1)
+              .toString()
+              .padStart(4, "0")
+          : "0001"; // ถ้าหากไม่มีรายการ ก็เริ่มที่ 0001
+
       const payload = {
-        // orderid: orderid,
+        orderid: newOrderId,
         totalprice: totalprice,
         name: name,
         qty: qty,
@@ -132,6 +122,7 @@ const ExpensePage = () => {
 
       if (button.isConfirmed) {
         await axios.delete(`${config.apiUrl}/expense/remove/${id}`);
+        renumberOrderIds(); // รีเซ็ต orderid หลังลบรายการ
         fetchData();
       }
     } catch (err: any) {
@@ -143,11 +134,29 @@ const ExpensePage = () => {
     }
   };
 
+    const renumberOrderIds = async () => {
+      try {
+        // รีเซ็ต orderid หลังจากลบ
+        const updatedExpenses = expense.map((item, index) => ({
+          ...item,
+          orderid: (index + 1).toString().padStart(4, "0"), // รีเซ็ต orderid ให้ต่อเนื่อง
+        }));
+
+        // อัปเดตฐานข้อมูลด้วย orderid ใหม่
+        const updatePromises = updatedExpenses.map((item) =>
+          axios.put(`${config.apiUrl}/expense/update/${item.id}`, item)
+        );
+        await Promise.all(updatePromises);
+        fetchData(); // รีเฟรชข้อมูลหลังจากอัปเดต orderid
+      } catch (error: any) {
+        console.error("Error renumbering order IDs:", error.message);
+      }
+    };
+
   const handleEdit = (id: number) => {
     const expenses = expense.find((expense: any) => expense.id === id) as any;
     if (expenses) {
       setId(expenses.id);
-      // setOrderid(expenses.orderid);
       setTotalprice(expenses.totalprice);
       setQty(expenses.qty);
       setName(expenses.name ?? "");
@@ -155,7 +164,7 @@ const ExpensePage = () => {
     }
   };
 
-  const filteredExpenses = expense.filter(
+ const filteredExpenses = expense.filter(
     (item) =>
       item.orderid.includes(searchQuery) || item.name.includes(searchQuery)
   );
@@ -167,7 +176,7 @@ const ExpensePage = () => {
       accessor: "name",
       className: "hidden md:table-cell",
     },
-  
+
     {
       header: "จำนวน",
       accessor: "qty",
@@ -263,16 +272,7 @@ const ExpensePage = () => {
         title="บันทึกรายจ่าย"
         onClose={handleCloseModal}
       >
-        {/* <div>
-          <div>เลขไอดี</div>
-          <input
-            type="text"
-            value={orderid}
-            onChange={(e) => setOrderid(e.target.value)}
-            className="border border-gray-300 rounded-md p-2 w-full"
-          />
-        </div> */}
-        <div >
+        <div>
           <div>รายการสินค้า</div>
           <input
             type="text"
@@ -281,7 +281,7 @@ const ExpensePage = () => {
             className="border border-gray-300 rounded-md p-2 w-full"
           />
         </div>
-         <div className="mt-4">
+        <div className="mt-4">
           <div>จำนวน</div>
           <input
             type="number"
@@ -299,7 +299,6 @@ const ExpensePage = () => {
             className="border border-gray-300 rounded-md p-2 w-full"
           />
         </div>
-       
 
         <div className="mt-4 text-right">
           <button
@@ -315,3 +314,40 @@ const ExpensePage = () => {
 };
 
 export default ExpensePage;
+
+/*
+"apiEndpoints": {
+    "getExpenseList": {
+      "method": "GET",
+      "url": "/expense/list/{page}",
+      "description": "Fetches a paginated list of expenses"
+    },
+    "createExpense": {
+      "method": "POST",
+      "url": "/expense/create",
+      "description": "Creates a new expense record"
+    },
+    "updateExpense": {
+      "method": "PUT",
+      "url": "/expense/update/{id}",
+      "description": "Updates an existing expense record"
+    },
+    "deleteExpense": {
+      "method": "DELETE",
+      "url": "/expense/remove/{id}",
+      "description": "Deletes an expense record"
+    },
+     "states": {
+    "isShowModal": false,
+    "orderid": "",
+    "name": "",
+    "totalprice": "",
+    "qty": "",
+    "id": 0,
+    "searchQuery": "",
+    "expense": [],
+    "page": 1,
+    "totalPage": 1,
+    "totalRows": 0
+  }
+      */

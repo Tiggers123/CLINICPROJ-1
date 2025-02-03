@@ -17,9 +17,6 @@ interface Bill {
   totalamount: number;
 }
 
-
-
-
 const BillRecord = () => {
   const [sellList, setSellList] = useState<Bill[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,16 +32,12 @@ const BillRecord = () => {
 
   const fetchData = async () => {
     try {
-      // const res = await axios.get(`${config.apiUrl}/sell/history`);
-      // setSellList(res.data);
-      // const resp = await axios.get(`${config.apiUrl}/sell/list/${page}`);
-      // setSellList(resp.data.sellList);
-      // setTotalRows(resp.data.totalRows);
-      // setTotalPage(resp.data.totalPages);
-      const { data } = await axios.get(`${config.apiUrl}/sell/list/${page}`);
-      setSellList(data.sellList);
-      setTotalRows(data.totalRows);
-      setTotalPage(data.totalPages);
+      const res = await axios.get(`${config.apiUrl}/sell/history`);
+      setSellList(res.data);
+       const lires = await axios.get(`${config.apiUrl}/sell/list/${page}`);
+      setSellList(lires.data.sellList);
+      setTotalRows(lires.data.totalRows);
+      setTotalPage(lires.data.totalPages);
     } catch (error: any) {
       Swal.fire({
         icon: "error",
@@ -54,13 +47,8 @@ const BillRecord = () => {
     }
   };
 
-  const data: Bill[] = [
-    { date: "01/01/2023 ", name: "หมายเหตุ 1", totalamount: 100 },
-    { date: "02/05/2023 ", name: "หมายเหตุ 2", totalamount: 200 },
-    { date: "03/04/2023 ", name: "หมายเหตุ 3", totalamount: 300 },
-  ];
 
-  const filteredData = data.filter((item) =>
+  const filteredData = sellList.filter((item) =>
     dayjs(item.date.trim()).format("DD/MM/YYYY").includes(searchQuery.trim())
   );
 
@@ -145,3 +133,23 @@ const BillRecord = () => {
 };
 
 export default BillRecord;
+
+/*
+ "states": {
+    "sellList": [],
+    "searchQuery": "",
+    "page": 1,
+    "totalPage": 1,
+    "totalRows": 0
+  },"apiEndpoints": {
+    "getSellHistory": {
+      "method": "GET",
+      "url": "/sell/history",
+      "description": "Fetches the sell history"
+    },
+    "getSellList": {
+      "method": "GET",
+      "url": "/sell/list/{page}",
+      "description": "Fetches the sell list with pagination"
+    }
+*/

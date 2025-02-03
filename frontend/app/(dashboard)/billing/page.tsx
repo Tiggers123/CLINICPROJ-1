@@ -8,41 +8,41 @@ import { useRouter } from "next/navigation";
 import Table from "@/app/components/Table";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
-const exampleSells = [
-  {
-    id: 1,
-    product: {
-      code: "P001",
-      name: "Product A",
-    },
-    qty: 1,
-    price: 100,
-  },
-  {
-    id: 2,
-    product: {
-      code: "P002",
-      name: "Product B",
-    },
-    qty: 1,
-    price: 200,
-  },
-  {
-    id: 3,
-    product: {
-      code: "P003",
-      name: "Product C",
-    },
-    qty: 1,
-    price: 300,
-  },
-];
+// const exampleSells = [
+//   {
+//     id: 1,
+//     product: {
+//       code: "P001",
+//       name: "Product A",
+//     },
+//     qty: 1,
+//     price: 100,
+//   },
+//   {
+//     id: 2,
+//     product: {
+//       code: "P002",
+//       name: "Product B",
+//     },
+//     qty: 1,
+//     price: 200,
+//   },
+//   {
+//     id: 3,
+//     product: {
+//       code: "P003",
+//       name: "Product C",
+//     },
+//     qty: 1,
+//     price: 300,
+//   },
+// ];
 
 const Page = () => {
   const [code, setCode] = useState("");
   const [price, setPrice] = useState(0);
   const [qty, setQty] = useState(0);
-  const [sells, setSells] = useState(exampleSells); // ข้อมูลทั้งหมด
+  const [sells, setSells] = useState([]); // ข้อมูลทั้งหมด
   const [id, setId] = useState(0); // ข้อมูล id เอาไว้แก้ไข หรือลบรายการ
   const [discount, setDiscount] = useState(0); // ส่วนลด %
   const [finalAmount, setFinalAmount] = useState(0); // ราคาหลังหักส่วนลด
@@ -157,7 +157,7 @@ const Page = () => {
   const columns = [
     { header: "Code", accessor: "product.code", className: "text-center" },
     {
-      header: "การรักษา",
+      header: "รายการ",
       accessor: "product.name",
       className: "text-center hidden sm:table-cell ",
     },
@@ -279,3 +279,43 @@ const Page = () => {
 };
 
 export default Page;
+ 
+
+/*
+{
+  "states": {
+    "code": "", // รหัสของการขาย
+    "price": 0, // ราคาของสินค้าหรือการขาย
+    "qty": 0, // จำนวนสินค้าที่ขาย
+    "sells": [], // รายการขาย
+    "id": 0, // รหัสการขาย
+    "discount": 0, // ส่วนลดที่ให้กับการขาย
+    "finalAmount": 0, // จำนวนเงินสุดท้ายหลังจากการคำนวณส่วนลด
+    "totalAmount": 0 // จำนวนเงินรวมทั้งหมดก่อนส่วนลด
+  },
+  
+  "apiEndpoints": {
+    "getSellList": {
+      "method": "GET", // HTTP method สำหรับการดึงข้อมูล
+      "url": "/sell/list", // URL สำหรับดึงรายการขาย
+      "description": "Fetches the list of sells." // คำอธิบายว่าเป็นการดึงรายการขาย
+    },
+    "createSell": {
+      "method": "POST", // HTTP method สำหรับการสร้างรายการขายใหม่
+      "url": "/sell/create", // URL สำหรับการสร้างรายการขาย
+      "description": "Creates a new sell record." // คำอธิบายว่าฟังก์ชันนี้ใช้สำหรับสร้างรายการขาย
+    },
+    "deleteSell": {
+      "method": "DELETE", // HTTP method สำหรับการลบรายการขาย
+      "url": "/sell/remove/{id}", // URL สำหรับการลบรายการขายตาม ID
+      "description": "Deletes a sell record by its ID." // คำอธิบายว่าเป็นการลบรายการขายตาม ID
+    },
+    "confirmSale": {
+      "method": "GET", // HTTP method สำหรับการยืนยันการขาย
+      "url": "/sell/confirm", // URL สำหรับยืนยันการขาย
+      "description": "Confirms the sale." // คำอธิบายว่าเป็นการยืนยันการขาย
+    }
+  }
+*/
+
+   
