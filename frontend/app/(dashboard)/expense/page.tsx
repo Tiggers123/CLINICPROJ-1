@@ -21,7 +21,7 @@ interface Expense {
 
 const ExpensePage = () => {
   const [isShowModal, setIsShowModal] = useState(false);
-  const [orderid, setOrderid] = useState("");
+  // const [orderid, setOrderid] = useState("");
   const [name, setName] = useState("");
   const [totalprice, setTotalprice] = useState("");
   const [qty, setQty] = useState("");
