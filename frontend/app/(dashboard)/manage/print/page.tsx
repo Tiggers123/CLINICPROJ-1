@@ -31,7 +31,7 @@ export default function PrintPage() {
       paymentMethod: "เงินสด",
       outstanding: 0,
       cashier: "เจ้าหน้าที่คลินิก",
-      dentist: "ทพญ.ธิดารัตน์ โสภาศรี",
+      dentist: "นายแพทย์ โอม ห้าหก",
     };
     setSell(mockData);
   }, []);
