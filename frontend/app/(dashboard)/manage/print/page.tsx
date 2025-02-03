@@ -108,8 +108,6 @@ export default function PrintPage() {
           <div>
             ที่อยู่: <strong>{sell.receivedFromAddress}</strong> Tel:{" "}
             <strong>{sell.receivedFromPhone}</strong>
-            <strong>$2</strong>
-            {sell.receivedFromPhone}
           </div>
 
           <table className="w-full text-lg border-collapse mt-4 border border-black">
