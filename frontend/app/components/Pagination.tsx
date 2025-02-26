@@ -14,10 +14,10 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
 }) => {
   return (
-    <div className="mt-5">
+    <div className="mt-3 ml-1">
       {/* Display total rows and pages */}
-      <div>รายการทั้งหมด {totalRows} รายการ</div>
-      <div>
+      <div className="text-lg">รายการทั้งหมด {totalRows} รายการ</div>
+      <div className="text-lg">
         หน้า {currentPage} จาก {totalPages}
       </div>
       {/* Pagination buttons */}
@@ -29,7 +29,7 @@ const Pagination: React.FC<PaginationProps> = ({
           disabled={currentPage === 1}
         >
           <i className="fa-solid fa-caret-left mr-1"></i>
-          <span className="hidden sm:inline">หน้าแรก</span>
+          <span className="hidden sm:inline text-lg">หน้าแรก</span>
         </button>
 
         {/* Previous Page Button */}
@@ -47,7 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({
             key={i}
             className={`px-3 py-2 rounded-md border ${
               i + 1 === currentPage
-                ? "bg-lamaError text-white   hover:bg-pink-400 transition"
+                ? "bg-lamahover text-white   hover:bg-lamaPink transition"
                 : "border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
             onClick={() => onPageChange(i + 1)}
@@ -71,7 +71,7 @@ const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages}
         >
-          <span className="hidden sm:inline">หน้าท้าย</span>
+          <span className="hidden sm:inline text-lg">หน้าท้าย</span>
           <i className="fa-solid fa-caret-right ml-2"></i>
         </button>
       </div>

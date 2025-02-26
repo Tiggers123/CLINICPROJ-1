@@ -16,7 +16,7 @@ export default function DashboardLayout({
           
           className="flex items-center justify-center mt-5 "
         >
-          <Image src="/logo.png" alt="logo" width={150} height={150} />
+          <Image src="/logo.png" alt="logo" width={120} height={120} />
           {/* <span className="hidden lg:block font-bold">CLINIC TIGER</span> */}
         </div>
         <Menu />

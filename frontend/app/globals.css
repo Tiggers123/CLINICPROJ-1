@@ -3,7 +3,14 @@
 @tailwind utilities;
 
 *{
-    font-family: 'Noto';
+    font-family: var(--font-noto);
 }
 
+h1 {
+  font-weight: 700;
+}
+
+h2 {
+  font-weight: 600;
+}
 

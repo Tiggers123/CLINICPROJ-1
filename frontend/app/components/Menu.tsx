@@ -90,7 +90,7 @@ const menuItems = [
 
 const Menu = () => {
   return (
-    <div className="mt-2 text-sm flex justify-center items-center">
+    <div className="mt-2 text-xl flex justify-center items-center">
       {menuItems.map((i) => (
         <div className="flex flex-col gap-4" key={i.title}>
           {i.items.map((item) => (
