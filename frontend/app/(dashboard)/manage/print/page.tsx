@@ -7,11 +7,13 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
 interface Treatment {
-  stock_id: string;
+  stock_id: string | null; // can be null for services
   drug_name: string;
   quantity: number;
-  unit_price: number;
+  unit_price: number | null; // can be null for services
   subtotal: number;
+  service?: string | null; // Optional service name
+  custom_price?: number | null; // Optional custom price for services
 }
 
 interface SellData {
@@ -73,24 +75,35 @@ export default function PrintPage() {
       {sell && (
         <div id="print-content" className="p-8">
           <div className="flex items-center mb-4 w-full">
-            <img src="/logo.png" alt="Clinic Logo" className="h-20" />
+            <img
+              src="/logo.png"
+              alt="Clinic Logo"
+              style={{ height: "100px", width: "auto" }}
+            />
             <h1 className="text-center flex-1 text-3xl">ใบเสร็จรับเงิน</h1>
           </div>
 
           <div className="flex justify-between items-center">
-            <div>ที่อยู่คลีนิค Tel: 0xx-xxx-xxxx</div>
+            <div>
+              ที่อยู่ (Address) : มงคงคีรี คลินิกการแพทย์ไทยประยุกต์ 12 ซอย 7
+              ถนนสิโรรส ต.สุเทพ อ.เมือง จ.เชียงใหม่ 50200
+            </div>
             <div>
               วันที่ (Date): {dayjs(sell.created_at).format("DD/MM/YYYY")}
             </div>
           </div>
+          <div className="mt-2">
+            เบอร์โทร (Tel) : 0821529499 หรือ 0935937259
+          </div>
           <div className="flex justify-between items-center mt-2 hidden sm:flex">
             <div>
-              รับเงินจาก (Received from) : _________________________________
+              รับเงินจาก (Received from) :
+              ________________________________________
             </div>
           </div>
           <div className="mt-2 hidden sm:block">
-            ที่อยู่ (Address): ___________________________________________ Tel:
-            _____________________
+            ที่อยู่ (Address): ___________________________________________
+            เบอร์โทร (Tel) : __________________________
           </div>
 
           <table className="w-full border-collapse mt-4 border border-black">
@@ -122,10 +135,10 @@ export default function PrintPage() {
                     {item.quantity.toLocaleString()}
                   </td>
                   <td className="py-1 px-4 border border-black text-right">
-                    {item.unit_price.toLocaleString()}
+                    {item.unit_price ? item.unit_price.toLocaleString() : "-"}
                   </td>
                   <td className="py-1 px-4 border border-black text-right">
-                    {item.subtotal.toLocaleString()}
+                    {item.subtotal ? item.subtotal.toLocaleString() : "N/A"}
                   </td>
                 </tr>
               ))}
@@ -158,20 +171,20 @@ export default function PrintPage() {
           <div className="mt-4 hidden sm:block">
             <div>หมอ (Doctor) : __________________________</div>
             <div className="mt-2">
-              ผู้ชำระเงิน (Payer): _______________________ ผู้รับเงิน (Cashier):
-              _______________________
+              ผู้ชำระเงิน (Payer) : ____________________________ ผู้รับเงิน (Cashier) :
+              _________________________
             </div>
             <div className="mt-2">
-              วันที่ (Date): _______________________ เวลา (Time):
+              วันที่ (Date) : _______________________ เวลา (Time) :
               _______________________
             </div>
           </div>
           <div className="flex justify-end mt-4 print-hidden">
             <button
-              className="text-xl bg-pink-500 hover:bg-pink-600 text-white px-6 py-1 rounded-lg shadow-md transition"
+              className=" bg-lamaPink hover:bg-lamahover text-white px-4 py-2.5 rounded-md flex items-center gap-2 transition-colors text-xl"
               onClick={printDocument}
             >
-              <i className="fa-solid fa-print mr-3"></i>พิมพ์บิล
+              <i className="fa-solid fa-print text-center"></i>พิมพ์บิล
             </button>
           </div>
         </div>

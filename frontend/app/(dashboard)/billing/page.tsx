@@ -11,13 +11,15 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 const Page = () => {
   const [code, setCode] = useState("");
   const [quantity, setQty] = useState(0);
-  const [sells, setSells] = useState([]); // ข้อมูลทั้งหมด
-  const [discount, setDiscount] = useState(0); // ส่วนลด %
-  const [finalAmount, setFinalAmount] = useState(0); // ราคาหลังหักส่วนลด
+  const [sells, setSells] = useState([]);
+  const [discount, setDiscount] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [productPrice, setProductPrice] = useState(0);
-  const [id, setId] = useState(0);
+  // const [id, setId] = useState(0);
   const router = useRouter();
+  const [service, setService] = useState("");
+  const [customPrice, setCustomPrice] = useState(0);
 
   const fetchStockDetails = async (stock_id: string): Promise<number> => {
     try {
@@ -38,7 +40,6 @@ const Page = () => {
         }
 
         const unitPrice = parseFloat(stock.unit_price);
-        console.log("Fetched unitPrice:", unitPrice); // ตรวจสอบค่าที่ดึงมา
 
         if (!isNaN(unitPrice)) {
           setProductPrice(unitPrice);
@@ -82,50 +83,136 @@ const Page = () => {
     setFinalAmount(discountedPrice);
   };
 
+  // const handleSave = async () => {
+  //   try {
+  //     if (!code || quantity <= 0) {
+  //       Swal.fire({
+  //         icon: "error",
+  //         title: "ข้อมูลไม่ครบถ้วน",
+  //         text: "กรุณากรอกรหัสสินค้าและจำนวนให้ถูกต้อง",
+  //       });
+  //       return;
+  //     }
+
+  //     const totalPrice = productPrice * quantity;
+
+  //     setTotalAmount(totalPrice);
+
+  //     const payload = {
+  //       items: [
+  //         {
+  //           stock_id: code,
+  //           quantity: quantity,
+  //           price: totalPrice,
+  //           // customPrice: customPrice,
+  //           // service: service,
+  //         },
+  //       ],
+  //     };
+
+  //     await axios.post(`${config.apiUrl}/api/bill/create`, payload);
+  //     setCode("");
+  //     setQty(0);
+  //     setProductPrice(0);
+  //     fetchData();
+  //   } catch (error: any) {
+  //     if (error.response?.status === 400) {
+  //       Swal.fire({
+  //         icon: "error",
+  //         title: "ไม่พบรายการสินค้า",
+  //         text: "ไม่พบรายการสินค้า หรือไม่มีในสต็อก",
+  //       });
+  //     } else {
+  //       Swal.fire({
+  //         icon: "error",
+  //         title: "เกิดข้อผิดพลาด",
+  //         text: error.message,
+  //       });
+  //     }
+  //   }
+  // };
+
   const handleSave = async () => {
     try {
-      if (!code || quantity <= 0) {
-        Swal.fire({
-          icon: "error",
-          title: "ข้อมูลไม่ครบถ้วน",
-          text: "กรุณากรอกรหัสสินค้าและจำนวนให้ถูกต้อง",
-        });
-        return;
-      }
+      if (code && quantity > 0) {
+        if (service || customPrice > 0) {
+          Swal.fire({
+            icon: "error",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณากรอกรหัสสินค้าและจำนวนไม่ต้องกรอกงานบริการและราคาอื่นๆ",
+          });
+          return;
+        }
 
-      const totalPrice = productPrice * quantity;
+        const totalPrice = productPrice * quantity;
 
-      setTotalAmount(totalPrice);
+        setTotalAmount(totalPrice);
 
-      const payload = {
-        items: [
-          {
-            stock_id: code,
-            quantity: quantity,
-            price: totalPrice,
-          },
-        ],
-      };
+        const payload = {
+          items: [
+            {
+              stock_id: code,
+              quantity: quantity,
+              price: totalPrice,
+              customPrice: 0,
+              service: "",
+            },
+          ],
+        };
 
-      await axios.post(`${config.apiUrl}/api/bill/create`, payload);
-      setCode("");
-      setQty(0);
-      setProductPrice(0);
-      fetchData();
-    } catch (error: any) {
-      if (error.response?.status === 400) {
-        Swal.fire({
-          icon: "error",
-          title: "ไม่พบรายการสินค้า",
-          text: "ไม่พบรายการสินค้า หรือไม่มีในสต็อก",
-        });
+        await axios.post(`${config.apiUrl}/api/bill/create`, payload);
+        setCode("");
+        setQty(0);
+        setProductPrice(0);
+        setService(""); 
+        setCustomPrice(0);  
+        fetchData();
+      } else if (service && customPrice > 0) {
+        if (code || quantity > 0) {
+          Swal.fire({
+            icon: "error",
+            title: "ข้อมูลไม่ครบถ้วน",
+            text: "กรุณากรอกงานบริการและราคาอื่นๆไม่ต้องกรอกรหัสสินค้าและจำนวน",
+          });
+          return;
+        }
+
+        const totalPrice = customPrice;
+
+        setTotalAmount(totalPrice);
+
+        const payload = {
+          items: [
+            {
+              stock_id: null,
+              quantity: 1,
+              price: totalPrice,
+              customPrice: customPrice,
+              service: service,
+            },
+          ],
+        };
+
+        await axios.post(`${config.apiUrl}/api/bill/create`, payload);
+        setCode("");
+        setQty(0);
+        setProductPrice(0);
+        setService(""); 
+        setCustomPrice(0);
+        fetchData();
       } else {
         Swal.fire({
           icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: error.message,
+          title: "ข้อมูลไม่ครบถ้วน",
+          text: "กรุณากรอกรหัสสินค้าและจำนวน หรือ งานบริการและราคาอื่นๆ",
         });
       }
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: error.message,
+      });
     }
   };
 
@@ -227,7 +314,14 @@ const Page = () => {
       <td className="px-6 py-4">{item.stock_id}</td>
       <td className="px-6 py-4 hidden sm:table-cell">{item.drug_name}</td>
       <td className="px-6 py-4 hidden sm:table-cell">{item.quantity}</td>
-      <td className="px-6 py-4 ">{item.unit_price.toLocaleString()}</td>
+      <td className="px-6 py-4">
+        {item.unit_price
+          ? item.unit_price.toLocaleString()
+          : item.custom_price
+          ? item.custom_price.toLocaleString()
+          : "N/A"}
+      </td>
+
       <td className="px-6 py-4 ">
         <button
           className="w-8 h-8 text-white bg-lamared hover:bg-red-500  rounded-full "
@@ -251,7 +345,8 @@ const Page = () => {
         </button>
       </div>
       <div className="flex gap-2 items-end">
-        <div className="w-full">
+        <div className="flex flex-wrap gap-4 mb-4"></div>
+        <div className="w-full -ml-2">
           <h2 className="ml-1 text-xl mb-1">รหัส</h2>
           <input
             className="p-3 rounded-md border border-gray-600 w-full text-sm"
@@ -274,10 +369,43 @@ const Page = () => {
         <div className="w-full ">
           <h2 className=" ml-1 text-xl">ราคา</h2>
           <input
-            className="p-3 rounded-md border border-gray-600 w-full text-sm "
+            className="p-3 rounded-md border bg-gray-100 border-gray-600 w-full text-sm "
             type="number"
             value={productPrice}
-            readOnly
+            onChange={(e) => {
+              const newPrice = parseFloat(e.target.value);
+              if (!isNaN(newPrice)) {
+                setProductPrice(newPrice);
+                setTotalAmount(newPrice * quantity); // คำนวณราคาใหม่เมื่อราคาเปลี่ยน
+              }
+            }}
+            placeholder="ราคา"
+          />
+        </div>
+
+        {/* Service Selection*/}
+        <div className="w-full hidden md:block">
+          <h2 className="ml-1 text-xl ">งานบริการ</h2>
+          <select
+            className="p-2.5 rounded-md border border-gray-600 w-full text-md"
+            value={service}
+            onChange={(e) => setService(e.target.value)}
+          >
+            <option value="">เลือกบริการ</option>
+            <option value="นวด">นวด</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+
+        {/* Custom Price Input */}
+        <div className="w-full hidden md:block">
+          <h2 className="ml-1 text-xl">ราคาบริการ</h2>
+          <input
+            className="p-3 rounded-md border border-gray-600 w-full text-sm"
+            type="number"
+            value={customPrice}
+            onChange={(e) => setCustomPrice(Number(e.target.value))}
+            placeholder="กรุณาระบุราคา"
           />
         </div>
 

@@ -143,7 +143,7 @@ const Page = () => {
                     {card.title}
                   </h2>
                   <span
-                    className={"text-xl p-4 rounded-xl text-black bg-gray-100"}
+                    className={"text-lg p-4 rounded-xl text-black bg-gray-100"}
                   >
                     {card.value}
                   </span>

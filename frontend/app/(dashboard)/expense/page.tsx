@@ -34,7 +34,9 @@ const ExpensePage = () => {
     setIsLoading(true);
     try {
     
-      const res = await axios.get(`${config.apiUrl}/api/expense/${page}`);
+      const res = await axios.get(
+        `${config.apiUrl}/api/expense/${page}/${searchQuery}`
+      );
 
       if (res.data.success && Array.isArray(res.data.expenses)) {
         setExpense(res.data.expenses);
